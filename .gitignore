@@ -1,0 +1,14 @@
+/venv/
+/.idea/
+/.vscode/
+logs/
+*.log
+*.pyc
+/venv3.11/
+*/__pycache__/
+monitor_logs/
+
+.env
+.vscode/
+*.envfile
+kafka_2.13-3.4.0

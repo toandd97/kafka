@@ -1,0 +1,164 @@
+version: "3.1"
+
+networks:
+  kafka-net:
+    driver: bridge
+
+# networks:
+#   localnet:
+#     attachable: true
+
+services:
+  zookeeper-server:
+    image: "bitnami/zookeeper:latest"
+    # image: docker.io/bitnami/zookeeper:3.8
+    networks:
+      - kafka-net
+      # - localnet
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: unless-stopped
+
+  kafka-server1:
+    image: "bitnami/kafka:latest"
+    # image: docker.io/bitnami/kafka:3.3
+    networks:
+      - kafka-net
+      # - localnet
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-server:2181
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-server1:9092
+      # - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-server1:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper-server
+    restart: unless-stopped
+
+  # redis:
+  #     image: 'bitnami/redis:latest'
+  #     environment:
+  #       - ALLOW_EMPTY_PASSWORD=yes
+  #     networks:
+  #       - kafka-net
+  # myapp:
+  #   image: 'YOUR_APPLICATION_IMAGE'
+  #   networks:
+  #     - kafka-net
+
+
+  # test:
+  #   image: mobioinc/mobio-k9s-stern
+  #   network_mode: host
+  #   volumes:
+  #     - /home/mobio/Documents/kafka/1tr_record/config:/root/.kube/
+  #   command: ["sh", "tail -f /dev/null"]
+  #   restart: unless-stopped
+
+  # uat:
+  #   image: mobioinc/mobio-k9s-stern
+  #   network_mode: host
+  #   volumes:
+  #     - /home/toandd/Downloads/uatconfigv2290223:/root/.kube/
+  #   entrypoint: /bin/sh
+  #   restart: unless-stopped
+
+  # kafka-server2:
+  #   image: "bitnami/kafka:latest"
+  #   networks:
+  #     - kafka-net
+  #   ports:
+  #     - "9093:9092"
+  #   environment:
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-server:2181
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
+  #     - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
+  #     # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-server2:9093
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #   depends_on:
+  #     - zookeeper-server
+  # es01:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.17.17
+  #   container_name: es01
+  #   environment:
+  #     - node.name=es01
+  #     - cluster.name=es-docker-cluster
+  #     - discovery.seed_hosts=es02,es03
+  #     - cluster.initial_master_nodes=es01,es02,es03
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - data01:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #   networks:
+  #     - elastic
+  # es02:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.17.17
+  #   container_name: es02
+  #   environment:
+  #     - node.name=es02
+  #     - cluster.name=es-docker-cluster
+  #     - discovery.seed_hosts=es01,es03
+  #     - cluster.initial_master_nodes=es01,es02,es03
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - data02:/usr/share/elasticsearch/data
+  #   networks:
+  #     - elastic
+  # es03:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.17.17
+  #   container_name: es03
+  #   environment:
+  #     - node.name=es03
+  #     - cluster.name=es-docker-cluster
+  #     - discovery.seed_hosts=es01,es02
+  #     - cluster.initial_master_nodes=es01,es02,es03
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - data03:/usr/share/elasticsearch/data
+  #   networks:
+  #     - elastic
+
+
+
+#     version: '3'
+
+# services:
+#   db:
+#     image: mysql
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: changethis!
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - db-data:/var/lib/mysql
+#   admin:
+#     image: phpmyadmin
+#     restart: always
+#     environment:
+#       - PMA_ARBITRARY=1
+#     ports:
+#       - 8080:80
+# volumes:
+#   db-data:

@@ -1,0 +1,134 @@
+#####################
+#Kubenet
+#####################
+#Tạo container K9S
+docker run -d -it --network host -v /home/toandd/Documents/kafka/1tr_record/config310123:/root/.kube/config --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+
+
+
+
+##########################################################
+----------------------------- DOCKER----------------------
+##########################################################
+
+#xóa docker và tất cả dữ liệu docker 
+sudo docker stop $(sudo docker ps -aq)
+sudo docker rm $(sudo docker ps -aq)
+
+sudo docker rmi $(sudo docker images -aq)
+sudo rm -rf /var/lib/docker
+sudo rm -rf $HOME/.docker
+
+
+# cấp quyền user trong docker
+sudo usermod -aG docker $USER
+sudo chmod 666 /var/run/docker.sock
+
+sudo lsof -i -sTCP:LISTEN | grep docker
+sudo kill 2241
+
+1. Quản lý Images:
+
+docker pull <image-name>: Tải image từ Docker Hub hoặc registry khác.
+docker images: Liệt kê tất cả image có trên máy.
+docker rmi <image-id>: Xóa image khỏi máy.
+docker build: Tạo image từ Dockerfile.
+
+2. Quản lý Containers:
+
+docker run <image-name>: Khởi chạy container từ image.
+docker ps: Liệt kê tất cả container đang chạy.
+docker ps -a: Liệt kê tất cả container, bao gồm cả container đã dừng.
+docker stop <container-id>: Dừng container.
+docker start <container-id>: Khởi động container đã dừng.
+docker rm <container-id>: Xóa container.
+
+3. Lựa chọn nâng cao:
+
+docker logs <container-id>: Xem log của container.
+docker exec <container-id> <command>: Chạy lệnh trong container.
+docker attach <container-id>: Kết nối vào terminal của container.
+docker port <container-id>: Xem port được mapping của container.
+docker volume ls: Liệt kê volumes của container.
+
+
+docker-compose -f docker-compose-2.yml up -d
+
+# all will be restart unless stopped
+docker update --restart unless-stopped $(docker ps -q) 
+
+# connect kafka
+ssh mobio@192.168.5.31
+
+# chay redisdo
+sudo lsof -i :6379
+
+docker exec -it redis bash
+sudo systemctl stop redis
+ cd /opt/bitnami/kafka/bin
+#Kubenet
+#Tạo container K9S
+
+/home/toandd/Documents/kafka/1tr_record/config310123
+
+docker run -d --name uat mobioinc/mobio-k9s-stern
+
+docker run -d -it --network host -v /home/toandd/Downloads/uatconfigv2290223:/root/.kube/ --entrypoint /bin/sh --name uat mobioinc/mobio-k9s-stern
+# hoac
+docker run -d -it --network host -v /home/mobio/Documents/kafka/1tr_record/config/config:/root/.kube/ --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+
+docker exec -it test /bin/sh hoặc docker exec -it test sh
+#vao k9s mobio
+k9s -n mobio-olap
+/ # stern -n mobio api-management-app-api-deployment-fc97c64c8-5bfmm --tail 100 | grep "dynamic-segments/list"
+#tim log goi api
+stern -n mobio-olap segment-app-api-deployment | grep '/segments/4994/reload'
+stern -n mobio-olap segment-app-api-deployment-69998f9966 | grep '/segments/155/reload' -C 2
+
+stern -n mobio mobioetl-csm-upsert-product-holding-company-68698d4bc5-s54dq | grep '"company_id": "65f3c19f7549f75b999f64f2"'
+
+
+#xem logs khi pod bị restart
+kubectl logs -n mobio-olap segment-schedule-scan-segment-processing-deployment-69d486l2fk4 --previous
+
+kubectl logs -n mobio mobioetl-csm-product-holding-history-company-56d8454cf5-wrqfz  --previous
+
+kubectl logs -n mobio mobioetl-csm-device-convert-to-profile-87b79bb99-fdcgk  --previous
+
+kubectl logs -n mobio dynamicevent-api-app-6cbdfd7bf6-rn8wf --previous
+
+
+# chay docker redis va kafka
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 bitnami/zookeeper:latest
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes bitnami/kafka:latest
+
+#chay docker redis  
+docker run -d --name redis -p 6379:6379 redis:latest
+
+
+docker run -d --name kafka -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e ALLOW_PLAINTEXT_LISTENER=yes bitnami/kafka:latest
+
+hoac 
+docker run -d --name kafka -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e ALLOW_PLAINTEXT_LISTENER=yes confluentinc/cp-kafka:latest
+
+
+docker run --name kafka -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true bitnami/kafka:latest
+
+
+
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 confluentinc/cp-zookeeper
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 zookeeper
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes confluentinc/cp-kafka
+
+
+> rs.status()
+{
+        "ok" : 0,
+        "errmsg" : "command replSetGetStatus requires authentication",
+        "code" : 13,
+        "codeName" : "Unauthorized"
+}
+> use admin 
+switched to db admin
+> db.auth
+db.auth("root-user", "password")

@@ -1,0 +1,31 @@
+####################
+cach cai venv trong python3.8
+####################
+sudo apt-get install python3.8-dev python3.8-venv
+python3 -m venv venv
+
+#list python version
+ls /usr/bin/python*
+# set default python
+sudo ln -sf /usr/bin/python3.11 /usr/bin/python3 
+
+
+
+# chạy nền
+export PYTHONPATH="/home/mobio/projects/Segment"
+nohup python refer/upsert_transaction.py 4bccc926-563d-4ecc-838d-0970997f0f86>> log_dir/loyalty_upsert_transaction.out 2>&1 &
+    - PYTHONPATH=./ nohup python3.11 refer/20240313_script_update_abac_ph.py >> $log_dir/20240313_script_update_abac_ph.out 2>&1 &
+ps -ef | grep toan.py
+kill -9 ...
+
+
+#####################
+#chay alembic tren k8s
+#####################
+python3.8 -m alembic upgreade head
+
+
+
+#fix apt update
+sudo apt install --reinstall python3 python python3-minimal --fix-broken
+

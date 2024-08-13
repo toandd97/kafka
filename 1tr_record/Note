@@ -1,0 +1,242 @@
+####################
+cach cai venv trong python3.8
+####################
+sudo apt-get install python3.8-dev python3.8-venv
+python3 -m venv venv
+
+#list python version
+ls /usr/bin/python*
+# set default python
+sudo ln -sf /usr/bin/python3.11 /usr/bin/python3 
+#####################
+cách dùng git rebase
+#####################
+commit nhánh mình trước, checkout sang nhánh muốn rebase
+pull xuống
+git pull origin staging 
+git log --oneline 
+git rebase staging 
+git reset --soft HEAD~1
+
+
+#####################
+#chay alembic tren k8s
+#####################
+python3.8 -m alembic upgreade head
+
+
+
+
+#####################
+#Kubenet
+#####################
+#Tạo container K9S
+docker run -d -it --network host -v /home/toandd/Documents/kafka/1tr_record/config310123:/root/.kube/config --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+
+
+
+#####################
+#Kafka
+#####################
+# lấy địa chỉ ip kafka
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kafka
+
+#xem thogn tin cau hinh kafka
+docker inspect kafka
+
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
+
+segment-request-caculate-profile
+segment-start-caculate-profile
+segment-result-caculate-profile
+
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic segment-request-caculate-profile
+
+
+
+
+#tao topic
+kafka-topics.sh --create --topic my_topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+bin/kafka-topics.sh --create --topic segment-request-caculate-profile --partitions 5 --replication-factor 1 --bootstrap-server localhost:9092
+
+bin/kafka-topics.sh --create --topic rfm-result-caculate-profile --partitions 5 --replication-factor 1 --bootstrap-server localhost:9092
+
+rfm-request-caculate-profile
+bin/kafka-console-producer.sh --topic segment-request-caculate-profile --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092
+
+bin/kafka-console-consumer.sh --topic rfm-request-caculate-profile --from-beginning --bootstrap-server localhost:9092
+
+bin/kafka-console-producer.sh --topic segment-request-caculate-profile --bootstrap-server localhost:9092
+
+
+bin/kafka-console-consumer.sh --topic rfm-result-caculate-profile --from-beginning --bootstrap-server localhost:9092
+
+
+## reset offset kafka
+kafka-consumer-groups.sh --bootstrap-server  192.168.5.174:9092 --group segment_process --reset-offsets --to-earliest --topic segment-result-caculate-profile --execute
+
+
+#find text in kafka topic
+bin/kafka-console-consumer.sh --topic segment-result-caculate-profile --bootstrap-server 192.168.5.31:9092 --max-messages 100
+
+bin/kafka-console-consumer.sh --topic segment-result-caculate-profile --from-beginning --bootstrap-server 192.168.5.31:9092 | grep '"segment_id": 329'
+
+bin/kafka-console-consumer.sh --topic segment-result-caculate-profile --from-beginning --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092 | grep '"segment_id": 329' | grep '"is_done": true'
+
+bin/kafka-console-consumer.sh --topic rfm-result-caculate-profile --from-beginning --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092 | grep '"segment_id": 2691.*"is_done": true'
+
+bin/kafka-console-consumer.sh --topic segment-sample-profile --from-beginning --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 | grep '"segment_id": 4862.*"version": 1'
+
+##########################################################
+----------------------------- DOCKER----------------------
+##########################################################
+
+#xóa docker và tất cả dữ liệu docker 
+sudo docker stop $(sudo docker ps -aq)
+sudo docker rm $(sudo docker ps -aq)
+
+sudo docker rmi $(sudo docker images -aq)
+sudo rm -rf /var/lib/docker
+sudo rm -rf $HOME/.docker
+# xóa tất cả các volumme docker (luu tru nga ca khi bi xoa docker)
+docker volume ls
+docker volume rm $(docker volume ls -q)
+
+
+# cấp quyền user trong docker
+sudo usermod -aG docker $USER
+sudo chmod 666 /var/run/docker.sock
+
+sudo lsof -i -sTCP:LISTEN | grep docker
+sudo kill 2241
+# all will be restart unless stopped
+docker update --restart unless-stopped $(docker ps -q) 
+
+# connect kafka
+ssh mobio@192.168.5.31
+
+# chay redisdo
+sudo lsof -i :6379
+
+docker exec -it redis bash
+sudo systemctl stop redis
+ cd /opt/bitnami/kafka/bin
+#Kubenet
+#Tạo container K9S
+
+/home/toandd/Documents/kafka/1tr_record/config310123
+
+docker run -d -it --network host -v /home/toandd/Documents/kafka/1tr_record/config310123:/root/.kube/config --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+# hoac
+docker run -d -it --network host -v /home/mobio/Documents/kafka/1tr_record/config:/root/.kube/ --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+
+docker exec -it test /bin/sh hoặc docker exec -it test sh
+#vao k9s mobio
+k9s -n mobio-olap
+stern -n mobio-olap segment-app-api-deployment | grep '/segments/4994/reload'
+stern -n mobio-olap segment-app-api-deployment-69998f9966 | grep '/segments/155/reload' -C 2
+# chay docker redis va kafka
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 bitnami/zookeeper:latest
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes bitnami/kafka:latest
+
+#chay docker redis  
+docker run -d --name redis -p 6379:6379 redis:latest
+
+
+docker run -d --name kafka -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e ALLOW_PLAINTEXT_LISTENER=yes bitnami/kafka:latest
+
+hoac 
+docker run -d --name kafka -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e ALLOW_PLAINTEXT_LISTENER=yes confluentinc/cp-kafka:latest
+
+
+docker run --name kafka -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true bitnami/kafka:latest
+
+
+
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 confluentinc/cp-zookeeper
+docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 zookeeper
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes confluentinc/cp-kafka
+
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes \
+  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_ZOOKEEPER_CONNECT=localhost:2181 \
+  confluentinc/cp-kafka
+
+
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes \
+  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
+  confluentinc/cp-kafka
+  
+OLAP_SEGMENT_POSTGRES_URI="postgresql+psycopg2://segment_user:segment%40123@192.168.5.170,192.168.5.171,192.168.5.172:5432/segment"
+
+OLAP_SEGMENT_POSTGRES_URI="postgresql://postgres:postgres@localhost:5432/postgres"
+
+postgresql://localhost:5432/postgres
+postgresql://192.168.5.170,192.168.5.171,192.168.5.172:5432/segment
+
+
+192.168.5.170,192.168.5.171,192.168.5.172
+
+
+# chạy nền
+export PYTHONPATH="/home/mobio/projects/Segment"
+nohup python refer/upsert_transaction.py 4bccc926-563d-4ecc-838d-0970997f0f86>> log_dir/loyalty_upsert_transaction.out 2>&1 &
+ps -ef | grep toan.py
+kill -9 ...
+
+
+
+"mongodb://localhost:27017/location"
+COMPANY_MONGO_URI="mongodb://localhost:27017/company"
+LOCATION_MONGO_URI="mongodb://localhost:27017/location"
+
+
+
+COMPANY_MONGO_URI="mongodb://company:company789@mongo3.mobio.dev:27017/company"
+# LOCATION_MONGO_URI="mongodb://locationuser:w79ax(wXVMKzk8^@mongo3.mobio.dev:27017/location"
+ELASTIC_SEARCH_7_HOST="192.168.5.151"
+ELASTIC_SEARCH_PORT=9200
+ELASTIC_SEARCH_USER="test"
+ELASTIC_SEARCH_PASSWORD="12345"
+# ELASTIC_SEARCH_HOST="elasticsearch.mobio.dev"
+# ELASTIC_SEARCH_PORT=9200
+
+
+mobio_etl_mongodb_uri="mongodb://mobio_etl:mobio_etl789@mongo3.mobio.dev:27017/mobio_etl"
+event_mongodb_uri="mongodb://eventuser:p123@mongo3.mobio.dev:27017/profileEvent"
+profiling_mongodb_uri="mongodb://profileuser:p123@mongo3.mobio.dev:27017/profiling"
+
+
+select * from pg_stat_activity where "usename"='segment_user';
+
+SELECT pg_cancel_backend(370703);
+
+
+SELECT pg_terminate_backend (235199)
+FROM pg_stat_activity
+WHERE usename = 'segment_user';
+
+#fix apt update
+sudo apt install --reinstall python3 python python3-minimal --fix-broken
+
+
+kubectl logs mobioetl-api-internal-6ffc999747-kgqnz  --previous
+kubectl describe pod segment-schedule-archive-segment-deployment
+
+# tim log trong pod
+stern -n mobio mobioetl-csm-upsert-product-holding-65cb75758f-nrrrv | grep 'cif": "20231145"'
+
+
+stern -n mobio mobioetl-csm-upsert-product-holding-67c57cbbcc-g6qc6 | grep "'cif': '20240612'.*'product_holding_id': '94348754876'"
+
+stern -n mobio mobioetl-csm-upsert-product-holding-67c57cbbcc-g6qc6 | grep "ee178612-b919-4d2e-87d8-6b101b112190"
+
+
+ 

@@ -1,0 +1,11 @@
+KEYS mobio_etl*
+
+127.0.0.1:6379> KEYS 'mobio_etl*'
+1) "mobio_etl:key1"
+2) "mobio_etl:key2"
+3) "mobio_etl:key3"
+
+#xóa key redis
+127.0.0.1:6379> DEL mobio_etl:key1 mobio_etl:key2 mobio_etl:key3
+
+EVAL "for _,k in ipairs(redis.call('keys', 'mobio_etl*')) do redis.call('del', k) end" 0
