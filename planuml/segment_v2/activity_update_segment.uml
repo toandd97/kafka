@@ -1,0 +1,21 @@
+@startuml 
+
+start
+:Update segment;
+note right
+    Update segment name, description
+end note
+if (segment name not exist) then (true)
+    :Update segment;
+    note left
+        field update:
+        name,
+        description,
+        keyword=unidecode_lower(name),
+        updated_info_time=_now,k
+        last_interactive_time= get_greater_time(_now, current_segment.last_interactive_time)
+    end note
+    :Create segment history;
+endif
+stop
+@enduml

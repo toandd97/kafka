@@ -1,0 +1,12 @@
+@startuml
+
+start
+:Xử lý product holding profile/company;
+:Lấy ra các field thay đổi và build cấu trúc;
+:Gửi event qua kafka:
+    profile: e174-ph-update-data
+    company: e175-ph-company-update-data;
+
+stop
+@enduml
+

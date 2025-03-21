@@ -1,0 +1,10 @@
+**MobioETL** là product để xác thực dữ liệu được truyền từ ETL đến module User Event 
+để hiển thị event product holding trên giao diện của profile và company
+
+
+
+@startuml
+skinparam sequenceMessageAlign right
+Bob -> Alice : Request
+Alice -> Bob : Response
+@enduml

@@ -1,4 +1,6 @@
 KEYS mobio_etl*
+ KEYS 'segment*'
+ EVAL "for _,k in ipairs(redis.call('keys', 'segment*')) do redis.call('del', k) end" 0
 
 127.0.0.1:6379> KEYS 'mobio_etl*'
 1) "mobio_etl:key1"
@@ -9,3 +11,10 @@ KEYS mobio_etl*
 127.0.0.1:6379> DEL mobio_etl:key1 mobio_etl:key2 mobio_etl:key3
 
 EVAL "for _,k in ipairs(redis.call('keys', 'mobio_etl*')) do redis.call('del', k) end" 0
+
+
+"profiling#get_attribute_product_line#((), {'lst_product_line_code': None, 'merchant_id': '1da163aa-a831-46bb-9bbf-d62f553dcab5'})"
+
+KEYS 'profiling#get_attribute_product_line#((), {'lst_product_line_code': None, 'merchant_id': '1da163aa-a831-46bb-9bbf-d62f553dcab5'})'
+
+EVAL "for _,k in ipairs(redis.call('keys', 'profiling#get_attribute_product_line*')) do redis.call('del', k) end" 0

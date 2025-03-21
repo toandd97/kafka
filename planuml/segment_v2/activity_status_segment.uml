@@ -1,0 +1,71 @@
+@startuml
+start
+:thay đổi trạng thái segment version từ other module
+topic: segment-status-calculate-v2;
+note left
+{
+   "merchant_id": <merchant_id>,
+   "segment_id": <segment_id>,
+   "request_source":{
+      "source":"JB", (Nguồn)
+         "source_key":"" (key),
+      "source_name":"" tên 
+  }
+  "action_time": datetime (thời gian hành động, duy nhất)
+   "start_time": datetime, (thời gian bắt đầu chạy phân tích bên thứ 3)
+   "end_time": datetime (thời gian bắt đầu chạy phân tích bên thứ 3)
+   "status":"running", ( PAUSED: Dừng
+        RUNNING: bắt đầu chạy 
+        RESUME: tiếp tục chạy 
+        CANCELLED: Hủy
+        DONE: kết thúc)
+   "compute_config":{
+      "allow_profile_loop":false
+   },
+   "data_callback":{
+    "topic_cb_dyn_segment_result_profile": "topic", (topic trả lại kết quả profile cho bên thứ 3 từ dynamic segment)
+     "data": {},
+     "partition_key": ' '
+    "per_page": 50 (số lượng profile muốn mỗi lần trả lại kết quả từ dynamic segment
+     mặc định sẽ là 50)
+  },
+  "frequency":{
+     "days_of_week": ["Monday", "Tuesday"...], (tính toán các ngày trong tuần)
+    "time_in_day": ["hh:mm", "hh:mm" ...], (thời gian tính toán trong ngày)
+    "every_x_minute": int, (bão nhiêu phút tính toán một lần)
+     "every_hour_at_x_minute": int, (mỗi giờ tính toán vào phút nào)
+ }
+"type_calculate": str, #loại tính toán ("STANDARD": Tính toán thủ công
+                                                                                 "AUTOMATIC": Tính toán tự động) 
+"unique_value": str, uuid
+ 'processing_time': <datetime> (thời gian bắt đầu xử lý)
+}
+end note
+fork
+    :Other module chạy tiến trình
+        status=="RUNNING";
+    :table segment version:
+        status =PROCESSING
+        allow_profile_loop: true/false
+        start_time: datetime
+        end_time: datetime
+        next_process_time: datetime;
+    :Create segment history: type=S1_create;
+fork again
+    :Other module 
+    status==[DONE, CANCELLED JB, PAUSED];
+    :Chuyển trạng thái segment version:
+        từ PROCESSING -> [DONE, PAUSED, CANCELLED];
+    :Create segment history
+        S2_update;
+fork again
+    :Other module 
+    status==RESUME;
+    :Chuyển trạng thái segment version:
+        từ PAUSED -> PROCESSING
+        next_process_time: datetime;
+    :Create segment history
+        S2_update;
+end fork
+stop
+@enduml

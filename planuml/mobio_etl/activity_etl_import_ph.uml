@@ -1,0 +1,25 @@
+@startuml
+
+start
+:Xử lý product holding profile/company qua etl, upload file;
+fork
+  :dùng consumer (qua etl);
+  
+fork again
+  :dùng schedule (qua upload file);
+end merge
+:Start process;
+:Tìm profile id/company id;
+if (profile_id/company_id != null) then (true)
+    if (validate field trong "product holding data") then (True)
+    :Upsert product holding;
+    :Push data lưu lịch sử:
+        product holding history profile
+        product holding history company;
+    #palegreen:Nếu upload file sẽ lưu kết quả
+    tạo queue gửi mail;
+    endif
+endif
+stop
+@enduml
+

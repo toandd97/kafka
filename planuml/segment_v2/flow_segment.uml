@@ -1,0 +1,39 @@
+@startuml Segment
+    autonumber "<b>[0]"
+    box Other module   #lightblue
+    participant "other module" as other_module
+    end box
+
+    box Segment
+    control scheduler_send_profile
+    participant "Segment" as segment
+    database Segment_MongoDB
+    control scheduler_scan
+    end box
+
+    box Compute Engine #lightblue
+    participant "Compute engine" as compute_engine
+    end box
+
+    box Database Starrock
+    database "Starrock" as starrock
+    end box
+
+    other_module -> segment: tạo/ reload segment/ chọn segment
+    segment-> Segment_MongoDB: tạo ra một version segment
+    loop scan every 1 minutes
+        scheduler_scan -> Segment_MongoDB: get all msg đến giờ tính toán
+        Segment_MongoDB -> scheduler_scan: response
+        scheduler_scan -> compute_engine: bắn msg qua kafka xử lý
+    end loop
+
+    compute_engine --> segment: trả về kết quả tính toán profiles, profile thoả mãn
+    segment -> Segment_MongoDB: lưu kết quả tính toán
+    segment -> starrock: lưu dữ liệu profiles
+    loop scan every 1 minutes
+        scheduler_send_profile -> Segment_MongoDB: lấy bản tin yêu cầu gửi profiles
+        Segment_MongoDB -> scheduler_send_profile: response
+        scheduler_send_profile -> starrock: lấy tập profiles thỏa mãn
+        scheduler_send_profile --> other_module: trả về kết quả profiles
+    end loop
+@enduml

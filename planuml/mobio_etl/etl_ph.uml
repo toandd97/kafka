@@ -1,0 +1,32 @@
+@startuml product_holding
+    autonumber "<b>[0]"
+    box ETL   #lightblue
+    queue "Mỗi bank là một pod etl riêng" as etl_bank
+    end box
+
+    box mobioetl
+    participant "Mobio ETL" as mobio_etl
+    database MobioETL_MongoDB
+    end box
+
+    box profiling
+    participant "Profiling" as profiling
+    end box
+
+
+    box UserEvent #lightblue
+    participant user_event
+    end box
+
+    alt nhận thẳng dữ liệu ETL
+        etl_bank -> mobio_etl: bắn message etl qua kafka
+    else nhận dữ liệu ETL và upsert profile
+        etl_bank -> profiling: bắn message etl qua kafka
+        profiling --> mobio_etl: callback trả về giá trị profile id
+    end
+
+    mobio_etl -> MobioETL_MongoDB: upsert product holding and history
+    mobio_etl -> user_event: bắn message event qua kafka
+@enduml
+
+

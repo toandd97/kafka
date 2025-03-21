@@ -1,0 +1,16 @@
+@startuml activity_reload_segment
+start
+:Reload segment;
+if (segment.type != SegmentType.STANDARD) then (raise LANG.NOT_MATCH)
+    stop
+endif
+if (segment.is_hide) then (raise LANG.STATUS_HIDE)
+    stop
+endif
+if (segment.status not in [SegmentStatus.FINISH, SegmentStatus.ERROR]) then (raise LANG.STATUS_TO_REFRESH)
+    stop
+endif
+stop
+if (segment.status == SegmentStatus.FINISH) then (true)
+    
+@enduml

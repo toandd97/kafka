@@ -1,0 +1,28 @@
+mobio-base-sdk-dev==1.0.25
+mobio-admin-sdk==1.0.8
+python-dateutil==2.8.2
+uwsgi==2.0.22
+Cython==3.0.2
+m-cipher==1.5.2
+flask_cors==3.0.10
+Flask==2.3.3
+SQLAlchemy==2.0.8
+alembic==1.10.2
+psycopg2-binary==2.9.5
+pytz==2023.3
+m-kafka-sdk-v2==0.1.8
+m-singleton==0.3
+m-validator==0.1
+m-schedule==0.6.7
+m-caching==0.1.13
+m-formatter-logging==1.0.5
+confluent-kafka==2.2.0
+m-scheduler-partitioning==0.1.13
+urllib3==2.0.4
+pandas==2.1.0
+openpyxl==3.1.2
+certifi==2023.07.22
+kafka-python==2.0.2
+# mobio-media-sdk==0.2.13
+# mobio-media-sdk-test==0.2.15
+mobio-notify-sdk==1.0.8

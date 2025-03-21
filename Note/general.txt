@@ -8,13 +8,21 @@ python3 -m venv venv
 ls /usr/bin/python*
 # set default python
 sudo ln -sf /usr/bin/python3.11 /usr/bin/python3 
+#####################
+cách dùng git rebase
+#####################
+commit nhánh mình trước, checkout sang nhánh muốn rebase
+pull xuống
+git pull origin staging 
+git log --oneline 
+git rebase staging 
+git reset --soft HEAD~1
 
-
-
+#kiem tra pod ket noi voi database
+[root@profilescan-csm-filter-jb-register-6c4fbf9d58-85ngl profile_scan]# curl telnet://mongo1:27017 -v
 # chạy nền
 export PYTHONPATH="/home/mobio/projects/Segment"
 nohup python refer/upsert_transaction.py 4bccc926-563d-4ecc-838d-0970997f0f86>> log_dir/loyalty_upsert_transaction.out 2>&1 &
-    - PYTHONPATH=./ nohup python3.11 refer/20240313_script_update_abac_ph.py >> $log_dir/20240313_script_update_abac_ph.out 2>&1 &
 ps -ef | grep toan.py
 kill -9 ...
 
@@ -29,3 +37,103 @@ python3.8 -m alembic upgreade head
 #fix apt update
 sudo apt install --reinstall python3 python python3-minimal --fix-broken
 
+
+
+
+
+OLAP_SEGMENT_POSTGRES_URI="postgresql+psycopg2://segment_user:segment%40123@192.168.5.170,192.168.5.171,192.168.5.172:5432/segment"
+
+OLAP_SEGMENT_POSTGRES_URI="postgresql://postgres:postgres@localhost:5432/postgres"
+
+postgresql://localhost:5432/postgres
+postgresql://192.168.5.170,192.168.5.171,192.168.5.172:5432/segment
+
+
+192.168.5.170,192.168.5.171,192.168.5.172
+
+
+
+
+
+"mongodb://localhost:27017/location"
+COMPANY_MONGO_URI="mongodb://localhost:27017/company"
+LOCATION_MONGO_URI="mongodb://localhost:27017/location"
+
+
+
+COMPANY_MONGO_URI="mongodb://company:company789@mongo3.mobio.dev:27017/company"
+# LOCATION_MONGO_URI="mongodb://locationuser:w79ax(wXVMKzk8^@mongo3.mobio.dev:27017/location"
+ELASTIC_SEARCH_7_HOST="192.168.5.151"
+ELASTIC_SEARCH_PORT=9200
+ELASTIC_SEARCH_USER="test"
+ELASTIC_SEARCH_PASSWORD="12345"
+# ELASTIC_SEARCH_HOST="elasticsearch.mobio.dev"
+# ELASTIC_SEARCH_PORT=9200
+
+
+mobio_etl_mongodb_uri="mongodb://mobio_etl:mobio_etl789@mongo3.mobio.dev:27017/mobio_etl"
+event_mongodb_uri="mongodb://eventuser:p123@mongo3.mobio.dev:27017/profileEvent"
+profiling_mongodb_uri="mongodb://profileuser:p123@mongo3.mobio.dev:27017/profiling"
+
+
+curl --location --request GET 'http://journey-builder-app-internal-service.mobio/api/v1.0/journey/using/segment?segment_id=2502&page=-1' \
+--header 'Authorization: Basic f38b67fa-22f3-4680-9d01-c36b23bd0cad' \
+--header 'x-merchant-id: 1b99bdcf-d582-4f49-9715-1b61dfff3924'
+
+curl --location --request GET 'http://journey-builder-app-internal-service.mobio/api/v1.0/journey/using/segment?segment_id=2236&segment_version=4&page=-1' \
+--header 'Authorization: Basic f38b67fa-22f3-4680-9d01-c36b23bd0cad' \
+--header 'x-merchant-id: 1b99bdcf-d582-4f49-9715-1b61dfff3924'
+
+
+curl --location --request GET 'http://segment-app-api-internal-service.mobio-olap/segment/internal/api/v1.0/segments/5054/total-profile \
+--header 'Authorization: Basic f38b67fa-22f3-4680-9d01-c36b23bd0cad' \
+--header 'x-merchant-id: 1b99bdcf-d582-4f49-9715-1b61dfff3924'
+
+# chay file de tao schedule
+#vao cong ty EIB, "chon cong ty dia chi" import media... vao click up 
+{
+    "code": 200,
+    "data": {
+        "_id": "6538e0247ecbdaca1413d8cc",
+        "capacity": "40.2 KB",
+        "company_id": "6538e007dcd83773098ad6af",
+        "created_time": "2023-10-25T09:30:12.614000Z",
+        "deleted_time": null,
+        "format_file": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "local_path": "/media/data/public_resources/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231025.xlsx",
+        "merchant_id": "57d559c1-39a1-4cee-b024-b953428b5ac8",
+        "status": "ACTIVE",
+        "title": "EIB_address_mapping_20231025.xlsx",
+        "type": [
+            "OTHER"
+        ],
+        "updated_time": "2023-10-25T09:30:12.614000Z",
+        "url": "https://t1.mobio.vn/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231025.xlsx"
+    },
+    "lang": "vi",
+    "message": "request th\u00e0nh c\u00f4ng."
+}
+
+PYTHONPATH=./ python3.11 refer/20230428_create_schedule_mapping_address.py 57d559c1-39a1-4cee-b024-b953428b5ac8 file:///media/data/public_resources/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231025.xlsx
+
+
+{
+  "_id": "653f69a928839cab6ac81d78",
+  "capacity": "79.8 KB",
+  "company_id": "6538e007dcd83773098ad6af",
+  "created_time": "2023-10-30T08:30:33.208000Z",
+  "deleted_time": null,
+  "format_file": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "local_path": "/media/data/public_resources/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231030.xlsx",
+  "merchant_id": "57d559c1-39a1-4cee-b024-b953428b5ac8",
+  "status": "ACTIVE",
+  "title": "EIB_address_mapping_20231030.xlsx",
+  "type": [
+    "OTHER"
+  ],
+  "updated_time": "2023-10-30T08:30:33.208000Z",
+  "url": "https://t1.mobio.vn/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231030.xlsx"
+}
+
+
+PYTHONPATH=./ python3.11 refer/20230428_create_schedule_mapping_address.py 57d559c1-39a1-4cee-b024-b953428b5ac8 file:///media/data/public_resources/static/57d559c1-39a1-4cee-b024-b953428b5ac8/upload/EIB_address_mapping_20231030.xlsx

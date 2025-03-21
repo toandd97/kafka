@@ -1,0 +1,15 @@
+@startuml
+box Nghiệp vụ chi tiêu thẻ chính/thẻ phụ
+actor Profile_A #red
+participant Event
+participant kafka
+Participant Trigger #lightblue
+Participant "Journey Builder" as jb #lightblue
+
+Profile_A->Event: Phát sinh chi tiêu
+Event-> kafka: Bắn tin chi tiêu của Profile B
+kafka->Trigger: Trigger nhận tin
+Trigger->Trigger: Kiểm tra điều kiện của Profile B
+Trigger->jb: Gửi tin nhắn
+endbox
+@enduml

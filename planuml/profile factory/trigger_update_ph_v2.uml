@@ -1,0 +1,24 @@
+@startuml
+
+start
+:trigger process product holding v2;
+fork
+  :trigger-process-ph-broad-v2;
+  
+fork again
+  :trigger-process-ph-single-v2;
+end merge
+:Event process;
+if (event_setting_field == trigger_cri_update_ph_multiple_v2) then (true)
+    if (validate field product holding) then (True)
+        if (validate field update) then (True)
+            if (validate field single, multi, datetime) then (True)
+            : send out SegmentValidateProfileCallback;
+            endif
+        endif
+    endif
+    
+endif
+stop
+@enduml
+

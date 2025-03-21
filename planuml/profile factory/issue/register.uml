@@ -1,0 +1,36 @@
+@startuml Profile Factory
+    autonumber "<b>[0]"
+    box Journey builder    #lightblue
+    participant "JB" as jb
+    end box
+
+    participant KAFKA as kafka
+
+    box Profile Factory 
+    participant "Factory" as factory
+    database register_bcast_DB
+    end box
+
+    participant API
+
+    box Profiling #lightblue
+    participant "Profiling" as profiling
+    database special_day_broadcast_register
+    control profiling_scan
+    end box
+
+    ' box Database Starrock
+    ' database "Starrock" as starrock
+    ' end box
+
+    == Luồng Đăng ký trigger ==
+    jb -> kafka: đăng ký trigger  \ntopic: factory-jb-register-broadcast
+    kafka --> factory: dữ liệu đăng ký trigger
+    factory -> register_bcast_DB: lưu dữ liệu đăng ký trigger
+    factory -> API: api: internal/v3.0/\n merchant/special_day_broadcast/register
+    API --> profiling: Đăng ký ngày đặc biệt
+    profiling -> special_day_broadcast_register: lưu dữ liệu ngày đặc biệt
+    profiling_scan -> special_day_broadcast_register: lấy dữ liệu ngày đặc biệt
+    profiling_scan -> kafka : bắn dữ liệu ngày đặc biệt \ntopic: factory-jb-dist-special-day-v1
+@enduml
+' internal/v3.0/merchant/special_day_broadcast/register

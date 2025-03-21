@@ -1,0 +1,46 @@
+@startuml Segment
+    autonumber "<b>[0]"
+    box Frontend   #lightblue
+    participant "FE" as fe
+    end box
+
+    box Segment
+    participant "Segment" as segment
+    database Segment_MongoDB
+    control scheduler_scan
+    end box
+
+    box Compute Engine #lightblue
+    participant "Compute engine" as compute_engine
+    end box
+
+    box Database Starrock
+    database "Starrock" as starrock
+    end box
+
+    == Luồng estimate all profile ==
+    fe -> segment: lấy dữ liệu estimate tất cả profile
+    segment -> starrock: lấy tổng all profile
+    starrock --> segment: trả về esimate tổng all profile
+    segment --> fe: trả về esimate tổng all profile
+    == Luồng estimate profile theo segment ==
+    autonumber "<b>[0]"
+    fe -> segment: lấy dữ liệu estimate profile có bộ lọc
+    segment -> Segment_MongoDB: tạo bản tin queue estimate profile
+    autonumber 2.1
+    loop scan every 1 minutes
+        scheduler_scan -> Segment_MongoDB: get all msg yêu cầu estimate profile
+        Segment_MongoDB --> scheduler_scan: response
+        scheduler_scan -> compute_engine: bắn msg qua kafka xử lý
+    end loop
+    compute_engine --> segment: trả về kết quả estimate profile
+    segment -> Segment_MongoDB: lưu kết quả estimate profile
+    autonumber 3
+    segment --> fe: request thành công + session_id để lấy dữ liệu estimate profile
+    == Luồng lấy giá trị estimate profile theo session id ==
+    autonumber "<b>[0]"
+    fe -> segment: api kèm session_id để lấy dữ liệu estimate profile
+    segment -> Segment_MongoDB: lấy giá trị estimate profile theo session_id
+    Segment_MongoDB --> segment: trả về kết quả estimate profile
+    segment --> fe: trả về kết quả estimate profile
+@enduml

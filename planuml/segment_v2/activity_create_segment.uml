@@ -1,0 +1,9 @@
+@startuml 
+
+start
+:Create segment;
+if (segment name not exist) then (true)
+    :Create segment;
+endif
+stop
+@enduml

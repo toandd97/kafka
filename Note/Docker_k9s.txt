@@ -74,8 +74,10 @@ sudo systemctl stop redis
 docker run -d --name uat mobioinc/mobio-k9s-stern
 
 docker run -d -it --network host -v /home/toandd/Downloads/uatconfigv2290223:/root/.kube/ --entrypoint /bin/sh --name uat mobioinc/mobio-k9s-stern
+docker run -d -it --network host -v /home/toandd/Documents/kafka/k9s/uat/config:/root/.kube/config --entrypoint /bin/sh --name uat mobioinc/mobio-k9s-stern
+
 # hoac
-docker run -d -it --network host -v /home/mobio/Documents/kafka/1tr_record/config/config:/root/.kube/ --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
+docker run -d -it --network host -v /home/toandd/Documents/kafka/k9s/test/config:/root/.kube/config --entrypoint /bin/sh --name test mobioinc/mobio-k9s-stern
 
 docker exec -it test /bin/sh hoặc docker exec -it test sh
 #vao k9s mobio
@@ -86,6 +88,7 @@ stern -n mobio-olap segment-app-api-deployment | grep '/segments/4994/reload'
 stern -n mobio-olap segment-app-api-deployment-69998f9966 | grep '/segments/155/reload' -C 2
 
 stern -n mobio mobioetl-csm-upsert-product-holding-company-68698d4bc5-s54dq | grep '"company_id": "65f3c19f7549f75b999f64f2"'
+stern -n mobio mobioetl-csm-df-upsert-ph-profile
 
 
 #xem logs khi pod bị restart
@@ -95,7 +98,7 @@ kubectl logs -n mobio mobioetl-csm-product-holding-history-company-56d8454cf5-wr
 
 kubectl logs -n mobio mobioetl-csm-device-convert-to-profile-87b79bb99-fdcgk  --previous
 
-kubectl logs -n mobio dynamicevent-api-app-6cbdfd7bf6-rn8wf --previous
+kubectl logs -n mobio segment-sch-callback-profile-5bc6f5b874-xvx9j --previous
 
 
 # chay docker redis va kafka
@@ -120,6 +123,21 @@ docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 conflue
 docker run -d --name zookeeper -e ALLOW_ANONYMOUS_LOGIN=yes -p 2181:2181 zookeeper
 docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes confluentinc/cp-kafka
 
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes \
+  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_ZOOKEEPER_CONNECT=localhost:2181 \
+  confluentinc/cp-kafka
+
+
+docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes \
+  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
+  confluentinc/cp-kafka
+  
+
+    -   PYTHONPATH=./ nohup python3.11 test.py >> $log_dir/test.out 2>&1 &
 
 > rs.status()
 {
@@ -132,3 +150,5 @@ docker run -d --name kafka -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes confluen
 switched to db admin
 > db.auth
 db.auth("root-user", "password")
+
+docker exec -it mongodb mongosh "mongodb://mobio_etl:mobio_etl789@192.168.5.23:27017/mobio_etl?authSource=mobio_etl"

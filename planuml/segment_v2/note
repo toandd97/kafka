@@ -1,0 +1,42 @@
+db.getCollection("segment").aggregate([
+    {
+        $match: {
+            merchant_id: "m1",  // Thay "m1" bằng giá trị merchant_id bạn muốn
+            segment_id: "s1"    // Thay "s1" bằng giá trị segment_id bạn muốn
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            request_source_name: 1,
+            key: 1
+        }
+    }
+])
+
+{
+
+    "merchant_id" : "m1",
+    "segment_id" : "s3",
+    "request_source_name" : "sourceA",
+    "key" : "key1"
+}
+
+
+
+db.getCollection("segment").aggregate([
+    {
+        $match: {
+            merchant_id: "m1",  // Điều kiện merchant_id
+            segment_id: "s1",    // Điều kiện segment_id
+            _id: { $gt: ObjectId("6734247f2daa9078d796a282")}
+        }
+    },
+    {
+        $project: {
+                           // Loại bỏ trường _id
+            request_source_name: 1,
+            key: 1
+        }
+    }
+])

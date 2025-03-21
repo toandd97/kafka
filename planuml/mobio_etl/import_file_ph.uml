@@ -1,0 +1,21 @@
+@startuml
+    autonumber "<b>[0]"
+
+    box ProductBank #lightblue
+    participant "Product Bank" as product_bank
+    end box
+
+    box mobioetl
+    participant "Mobio ETL" as  mobio_etl
+    database MobioETL_MongoDB
+    end box
+
+    box UserEvent #lightblue
+    participant "User Event" as user_event
+    end box
+
+    product_bank -> mobio_etl: api import file internal
+    mobio_etl -> MobioETL_MongoDB: upsert product holding and history
+    mobio_etl -> MobioETL_MongoDB: save file processing results in table email
+    mobio_etl -> user_event: bắn message event
+@enduml

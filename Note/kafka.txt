@@ -5,7 +5,8 @@
 
 # connect kafka
 ssh mobio@192.168.5.31
-
+# kafka uat
+ssh kafka@183.91.8.91 -p 221
 
 # lấy địa chỉ ip kafka
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kafka
@@ -16,40 +17,47 @@ docker inspect kafka
 bin/zookeeper-server-start.sh config/zookeeper.properties
 bin/kafka-server-start.sh config/server.properties
 
-
-
 #danh sách topic
 bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 
-## Xóa topic
+# Xóa topic
 kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic segment-request-caculate-profile
+
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --describe --all-groups | grep my-topic
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --all-groups --describe | grep my-topic
+
+kafka-topics.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --delete --topic my-topic
 
 ## reset offset kafka
 kafka-consumer-groups.sh --bootstrap-server  192.168.5.174:9092 --group segment_process --reset-offsets --to-earliest --topic segment-result-caculate-profile --execute
 
 ## check kafka lag
-bin/kafka-consumer-groups.sh  --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --describe --group mobio-etl-product-holding
+bin/kafka-consumer-groups.sh  --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --describe --group event-e80-change-profile-data-msg-bus
 
+#grep loại bỏ
+grep -v "code"
+#grep lấy 10 thằng đầu
+head -n 10
 ## cấu hình timeout 
 bin/kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --entity-type brokers --entity-name 10 --alter --add-config 'group.idle.timeout.ms=300000'
 
 bin/kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --entity-type topics --entity-name dyn-event-auto-scale --alter --add-config retention.ms=300
 
 bin/kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --entity-type brokers --entity-name 10 --alter --add-config group.idle.timeout.ms=300000
-
 ## danh sách broker
 bin/kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --entity-type brokers --describe
 
 
 
 #tao topic
-bin/kafka-topics.sh --create --topic profile-event-dynamic-p1 --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+bin/kafka-topics.sh --create --topic my-topic-1 --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092 --partitions 1 --replication-factor 1
+bin/kafka-topics.sh --create --topic mobio-etl-upsert-product-holding --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 bin/kafka-topics.sh --create --topic dynamic-segment-result-caculate-profile --partitions 5 --replication-factor 1 --bootstrap-server localhost:9092
 
-bin/kafka-console-consumer.sh --topic rfm-request-caculate-profile --from-beginning --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic factory-dist-product-holding --from-beginning --bootstrap-server localhost:9092
 
-bin/kafka-console-producer.sh --topic segment-request-caculate-profile --bootstrap-server localhost:9092
+bin/kafka-console-producer.sh --topic mobio-etl-upsert-product-holding --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
 
 # kiem tra config topic 
 bin/kafka-topics.sh --describe --topic dyn-event-auto-scale --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
@@ -66,11 +74,11 @@ bin/kafka-consumer-groups.sh --bootstrap-server 192.168.5.31:9092 --describe --g
 bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list 192.168.5.31:9092 --topic dyn-event-status-register --time -1
 [root@kafka1 kafka]# bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list 192.168.5.31:9092 --topic dyn-event-status-register --time -1
 
-## tìm kiếm in kafka
+# lấy bản tin trong topic
 [root@kafka1 kafka]# bin/kafka-console-consumer.sh --bootstrap-server 192.168.5.31:9092 --topic dyn-event-status-register --partition 5 --offset 164 --max-messages 10
+#giới hạn 10 bản tin 
+bin/kafka-console-consumer.sh --topic factory-jb-register-broadcast --from-beginning --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092| head -n 10
+bin/kafka-console-consumer.sh --topic my-topic-1 --from-beginning --bootstrap-server 192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092
 
-bin/kafka-console-consumer.sh --from-beginning --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 --topic segment-result-caculate-profile | grep '"segment_id": 4862.*"is_done": true'
-
-
-bin/kafka-console-consumer.sh --topic mobio-etl-upsert-product-holding --from-beginning --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092 | grep '"merchant_id": "57d559c1-39a1-4cee-b024-b953428b5ac8".*"cif": "20231162"'
+bin/kafka-run-class kafka.tools.GetOffsetShell --broker-list 192.168.5.31:9092 --topic dyn-event-status-register --time -1
 

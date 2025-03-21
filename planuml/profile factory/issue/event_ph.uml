@@ -1,0 +1,53 @@
+@startuml Profile Factory
+    autonumber "<b>[0]"
+    box Event    #lightblue
+    participant "event" as event
+    end box
+
+    participant KAFKA as kafka
+
+    box Profile Factory 
+    participant "Factory" as factory
+    database register_bcast_DB
+    database JBEventSpecialDayV1
+    end box
+
+    participant API
+
+    box Profiling #lightblue
+    participant "Profiling" as profiling
+    database special_day_broadcast_register
+    end box
+
+    == Luồng xử lý trigger ==
+    event -> kafka: event  \ntopic: dist-product-holding
+    kafka --> factory: dữ liệu event
+    factory -> factory: xử lý trigger product holding v1
+    factory -> kafka: gửi dữ liệu product holding \ntopic: profiling-jb-validate-filter \ncall back: factory-process-product-holding-broad
+    kafka --> profiling: kéo data product holding
+    profiling -> profiling: validate data product holding
+    profiling -> kafka: trả lại data product holding \ntopic: factory-process-product-holding-broad
+    kafka --> factory: dữ liệu product holding
+
+
+    factory -> factory: check ngày đặc biệt >= 20221105
+    autonumber 9.1
+    ' factory -> JBEventSpecialDayV1: <font color=red><b> check special day có dữ liệu của profile không</b> </font>
+    factory -> kafka: gửi dữ liệu ngày đặc biệt \ntopic: profiling-jb-validate-filter \ncall back: factory-jb-dist-special-day-v1
+    autonumber 10
+    factory -> factory: check product holding v1
+    factory -> kafka: send out
+    == Luồng profiling validate ==
+    kafka --> profiling: kéo data để validate
+    profiling -> profiling: validate data validate
+    profiling -> kafka: trả lại data validate \ntopic: special day
+    kafka --> factory: nhận dữ liệu sau khi validate
+    factory -> factory: check ngày đặc biệt
+    factory -> factory: product holding v1
+    factory -> kafka: send out
+    == Luồng profiling quét ngày đặc biệt ==
+
+
+
+@enduml
+' internal/v3.0/merchant/special_day_broadcast/register

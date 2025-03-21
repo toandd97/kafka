@@ -1,0 +1,15 @@
+
+
+
+bin/kafka-console-consumer.sh --topic factory-process-update-profile-brcast-v2 --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --from-beginning | grep "workflow::be3047b8-007f-11f0-9ea8-119d1f747e5e"
+bin/kafka-console-consumer.sh --topic segment-pyspark-notify-status-calculate --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --from-beginning | grep 407490553521902950
+bin/kafka-console-consumer.sh --topic profiling-jb-profile-filter-register-finish --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --from-beginning | grep 407490553521902950
+bin/kafka-console-consumer.sh --topic segment-status-calculate-v2 --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --from-beginning | grep 28b6801c-86fd-470e-b8ac-1fe3abe372db
+bin/kafka-console-consumer.sh --topic segment-result-caculate-profile-v2 --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --from-beginning
+bin/kafka-console-consumer.sh --topic jb-process-filter-node-result-cmd --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true | grep f54d487f-3597-486d-b0d9-c1fa2d79f1f9
+segment-result-caculate-profile-v2
+
+
+bin/kafka-console-consumer.sh --topic jb-process-filter-node-result-cmd --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --property print.timestamp=true --time-from-now 7200000 | grep '406911887897265525.*f54d487f-3597-486d-b0d9-c1fa2d79f1f9'
+
+bin/kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --describe --group jb-process-filter-node-result-cmd

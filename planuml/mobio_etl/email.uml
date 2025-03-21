@@ -1,0 +1,8 @@
+@startuml
+    autonumber "<b>[0]"
+
+    control "scheduler result email" as schImp
+    queue "Processing File" as  handle_file
+    database MobioETL_MongoDB
+
+@enduml

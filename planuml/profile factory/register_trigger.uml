@@ -1,0 +1,48 @@
+@startuml
+
+start
+:register trigger multi-source;
+fork
+  :topic: jb-register-broadcast;
+  
+fork again
+  :topic: jb-register-single;
+end merge
+:process stop trigger ads;
+
+:validate data;
+:validate not null data;
+if (jb_event_type == BROAD_CAST) then (true)
+  if (action_time < register_in_mongo_action_time) then (true)
+    :update_history;
+    note left
+      table jb_event_register_broadcast
+    end note
+  stop
+  endif
+  :save_with_validate;
+  note left
+    table jb_event_register_broadcast
+  end note
+  if (source in [ADS,WORKFLOW]) then (true)
+    :send kafka _callback_trigger_register;
+  endif
+  :profiling_special_day_register_broadcast;
+endif
+if (jb_event_type == SINGLE_PROFILE) then (true)
+  if (action_time < register_in_mongo_action_time) then (true)
+    :update_history;
+    note left
+      table jb_event_register_broadcast
+    end note
+  stop
+  endif
+  :save_with_validate;
+  note left
+    table jb_event_register_broadcast
+  end note
+  :JBValidateFilterHelper;
+endif
+stop
+@enduml
+

@@ -1,32 +1,14 @@
 from datetime import datetime, timedelta
+from time import sleep
 from confluent_kafka import Producer
 import json
 
-
 class ExampleProducer:
-    # broker = "192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092"
-    broker = "localhost:9092"
+    broker = "192.168.5.31:9092,192.168.5.32:9092,192.168.5.33:9092,192.168.5.34:9092,192.168.5.35:9092"
+    # broker = "localhost:9092"
+    # topic = 'my-topic'
+    topic = "factory-process-update-profile-brcast-v2"
 
-    # topic = 'dynamic-segment-result-caculate-profile'
-    # topic = 'dynamic-segment-status-calculate'
-    # topic = 'mobio-etl-product-holding-history'
-    # topic = 'dynamic-segment-result-caculate-profile'
-    # topic = "dyn-event-status-register"
-    # topic = "mobio-etl-upsert-product-holding"
-
-    # topic = "profiling-unify-or-insert"
-    # topic = "mobio-etl-upsert-product-holding-company"
-    # topic = "mobio-etl-product-holding-history-company"
-    # topic = "mobio-etl-product-holding-history"
-    # topic = "event-set-tag-interactive"
-    # topic = "profile-event-dynamic-p1"
-    topic = "dyn-event-auto-scale"
-    # topic = "segment-test-restart-consumer"
-    # topic = "segment-validate-profile"
-    # topic = "segment-result-caculate-profile"
-    # topic = "rfm-result-caculate-profile"
-    # DYNAMIC_SEGMENT_STATUS_JB = 'dynamic-segment-status-calculate'
-    # DYNAMIC_SEGMENT_RESULT_CACULATE_PROFILE = 'dynamic-segment-result-calculate-profile'
     producer = None
 
     def __init__(self):
@@ -74,46 +56,29 @@ example_producer = ExampleProducer()
 _now = datetime.utcnow()
 end_time = _now + timedelta(days=30)
 
-# data = {
-#     "status": "FALSE",
-#     "message": "Đăng ký không thành công",
-#     "data_callback": {
-#         "merchant_id": "1b99bdcf-d582-4f49-9715-1b61dfff3924",
-#         "event_key": "ten_cua_dynamic_event_test_14_1716342257"
-#     }
-# }
-
-
-for index, _ in enumerate(range(1)):
-    print(index)
-    data = {
-        "code": "success",
-        "data": {
-            "merchant_id": [
-                "4bccc926-563d-4ecc-838d-0970997f0f86"
+data = {
+        "merchant_id" : "57d559c1-39a1-4cee-b024-b953428b5ac8",
+        "profile_id" : "73cde275-18ef-4a04-b3e5-0c8dcad9b5da",
+        "product_id" : "65783ccafdfa7221c0d89bc7",
+        "product_holding_id" : "1",
+        "data_datetime" : 1731656689,
+        "product_holding_data" : {
+            "name" : "VITA - Sống Thịnh Vượng",
+            "product_line" : "65698fd7f4c905f2797ae26e",
+            "product_code" : "IL1",
+            "_dyn_so_the_1718703292140" : "BV23456",
+            "open_day" : "03/05/2024",
+            "_dyn_ngay_het_han_1718703663701+dmy" : "03/05/2027",
+            "_dyn_ngay_kich_hoat_1718703714219+dmy" : "03/05/2024",
+            "_dyn_the_chinh_phu_1718703797064" : "Thẻ chính",
+            "_dyn_han_muc_the_1718703861115" : 100000000,
+            "_dyn_dropdown_multiple_select_1701831825705" : [
             ],
-            "profile_id": "35ef22f5-424c-4b4a-98bc-dbeb2b4f226e +" + str(index),
+            "maturity_date" : "11/10/2024",
+            "product_status" : "Activate"
         },
-
-
-
-        "data_callback": {
-            "event_key": "test_validate_field_1722223333",
-            "event_data": {
-                "str": 123,
-                "int": "5000000",
-                "double": "123456789876543.1234",
-                "date": "2022-01-01",
-                "datetime": 1641024000.0,
-                "boolean": True
-            },
-            "merchant_id": "4bccc926-563d-4ecc-838d-0970997f0f86",
-            "tracking_code": "zcLQWn9xMzaB-oqBYnWT2_t1",
-            "dynamic_event_id": "66a70ae54807c481844ff5352"
-        }
+        "tracking_code" : "672072330ba2b4f5704ca0cc"
     }
 
-
-    example_producer.send_msg_async(data)
-
-# PYTHONPATH=./ python3.11 test.py >> $log_dir/test.out 2>&1
+example_producer.send_msg_async(data)
+sleep(5)

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Config
+clusters:
+- name: uat-cluster
+  cluster:
+    insecure-skip-tls-verify: true
+    server: https://mobiodev.mobio.dev:6442
+contexts:
+- name: uat-context
+  context:
+    cluster: uat-cluster
+    namespace: mobio
+    user: uat-user
+current-context: uat-context
+users:
+- name: uat-user
+  user:
+    token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDWDhHWmN2djlfYjJjbGl4ckVvSWNlZ3hISkxURjVxa2JpVE5VS3J5aUkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJtb2JpbyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJyZWFkLW9ubHkiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoicmVhZG9ubHktdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImQxOWM0ZjVmLTcxZmMtNGRhYi04NzkxLTFiMDBkNTE5NmI3MiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDptb2JpbzpyZWFkb25seS11c2VyIn0.dgvnxrrFcqBtVZBfkyyW4bV6cOr1aVOhq8BOrNTt7V7-_f7kHnRMSprzMxzuS7CfFMSmftBDRkqavZYT1nlptAXb5_vx6isuFtbfFkiadCZW7Fs4q4oNcwflQYY1AElpXMKYoZATlZB1f32wkvMt0ICSym8rXiM94ErdmPNZWZkKfcImMwc-3FGBUiOZiCqvWuX1x9L372uUZfCHnb4NjxJkV4QJNLKr2axLlZ_fCz1iLa3S74M1OTiDvGZFmPW_2_ulhyQhfTLJCL3VGeYhsNJV68ZJv-jz4QlbUhtUJbOHFfXzzA85HlikCs0c3iwPX-omyRl2Z3DTNYbDwwS_3A
