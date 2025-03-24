@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  uat:
+    image: mobioinc/mobio-k9s-stern
+    container_name: uat
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    network_mode: host
+    entrypoint: /bin/sh
+    volumes:
+      - /home/toandd/Documents/kafka/k9s/uat/config:/root/.kube/config
+
+  test:
+    image: mobioinc/mobio-k9s-stern
+    container_name: test
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    network_mode: host
+    entrypoint: /bin/sh
+    volumes:
+      - /home/toandd/Documents/kafka/k9s/test/config:/root/.kube/config
