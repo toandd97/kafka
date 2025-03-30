@@ -20,6 +20,13 @@ bin/kafka-server-start.sh config/server.properties
 #danh sách topic
 bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 
+#tao topic
+docker exec kafka /opt/bitnami/kafka/bin/kafka-topics.sh --create --topic streaming --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
+#producer
+docker exec -it kafka /opt/bitnami/kafka/bin/kafka-console-producer.sh --topic streaming --bootstrap-server kafka:9092
+#consumer
+docker exec kafka /opt/bitnami/kafka/bin/kafka-console-consumer.sh --topic streaming --from-beginning --bootstrap-server kafka:9092
+
 # Xóa topic
 kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic segment-request-caculate-profile
 
@@ -55,7 +62,8 @@ bin/kafka-topics.sh --create --topic mobio-etl-upsert-product-holding --bootstra
 
 bin/kafka-topics.sh --create --topic dynamic-segment-result-caculate-profile --partitions 5 --replication-factor 1 --bootstrap-server localhost:9092
 
-bin/kafka-console-consumer.sh --topic factory-dist-product-holding --from-beginning --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic streaming --from-beginning --bootstrap-server kafka:9092
+bin/kafka-console-producer.sh --topic streaming --bootstrap-server kafka:9092
 
 bin/kafka-console-producer.sh --topic mobio-etl-upsert-product-holding --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
 

@@ -27,6 +27,22 @@ sudo chmod 666 /var/run/docker.sock
 sudo lsof -i -sTCP:LISTEN | grep docker
 sudo kill 2241
 
+Kiểm tra thư mục /var/lib/docker
+Thư mục này là nơi Docker lưu trữ dữ liệu. Nếu nó không tồn tại, có thể Docker chưa được cài đặt đúng cách hoặc bị lỗi.
+Thử tạo lại thư mục:
+
+bash
+Copy
+Edit
+sudo mkdir -p /var/lib/docker
+sudo chown -R $USER:$USER /var/lib/docker
+Sau đó khởi động lại Docker:
+
+bash
+Copy
+Edit
+sudo systemctl restart docker
+
 1. Quản lý Images:
 
 docker pull <image-name>: Tải image từ Docker Hub hoặc registry khác.
